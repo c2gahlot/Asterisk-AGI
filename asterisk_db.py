@@ -68,3 +68,20 @@ def get_nodes(ivr_id, parent_node_id, last_input):
     myconn.close()
     return details
 
+
+def get_users_by_tag(tag_name):
+    myconn = mysql.connector.connect(host="localhost", user="root", passwd="root", database="my_operator")
+    cur = myconn.cursor(buffered=True)
+    sql = ''' select * from agents where tag = '{}' '''.format(tag_name)
+
+    try:
+        cur.execute(sql)
+        myconn.commit()
+    except Exception as exception:
+        print(exception)
+        myconn.rollback()
+
+    details = format_query_result(cur, 'many')
+    myconn.close()
+    return details
+

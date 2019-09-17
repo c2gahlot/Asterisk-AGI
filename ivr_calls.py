@@ -26,7 +26,12 @@ def command_handler(node):
     global node_id, node_input
 
     if node['action'] == 'dial':
-        agi.execute('EXEC DIAL {}'.format(node['user']))
+        agents = asterisk_db.get_users_by_tag(node['users_tag'])
+        agent_list = []
+        for agent in agents:
+            agent_list.append('{}/{}'.format(agent['type'], agent['name']))
+        agent_string = '&'.join(agent_list)
+        agi.execute('EXEC DIAL {}'.format(agent_string))
     elif node['action'] == 'playback':
         node_input = agi.get_option(node['file'], '12345')
     elif node['action'] == 'input':
