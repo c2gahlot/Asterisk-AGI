@@ -20,9 +20,7 @@ def get_call_details(caller_id):
         where dnid = '{}' '''.format(caller_id)
 
     try:
-        # inserting the values into the table
         cur.execute(sql)
-        # commit the transaction
         myconn.commit()
     except Exception as exception:
         print(exception)
@@ -55,7 +53,8 @@ def get_ivr_details(company_id, time_now):
 def get_nodes(ivr_id, parent_node_id, last_input):
     myconn = mysql.connector.connect(host="localhost", user="root", passwd="root", database="my_operator")
     cur = myconn.cursor(buffered=True)
-    sql = ''' select * from ivr_nodes where ivr_id = {} and parent_node_id = {} and last_input = {} '''.format(ivr_id, parent_node_id, last_input)
+    sql = ''' select * from ivr_nodes where ivr_id = {} and parent_node_id = {} and 
+          last_input = {} '''.format(ivr_id, parent_node_id, last_input)
 
     try:
         cur.execute(sql)
