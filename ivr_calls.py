@@ -11,13 +11,13 @@ caller_id = sys.argv[2]
 context = sys.argv[3]
 extension = sys.argv[4]
 timestamp = sys.argv[5]
-node_id = None
-node_input = None
+
+parent_node_id = 0
+node_input = 0
 
 
-def start_ivr_interation(ivr_id):
-    agi.verbose('IVR ID : {}'.format(ivr_id), level=4)
-    nodes = asterisk_db.get_nodes(ivr_id)
+def start_ivr_interation(ivr_id, parent_node_id=0, last_input=0):
+    nodes = asterisk_db.get_nodes(ivr_id, parent_node_id, last_input)
     for node in nodes:
         command_handler(node)
 
@@ -25,15 +25,15 @@ def start_ivr_interation(ivr_id):
 def command_handler(node):
     global node_id, node_input
 
-    node_id = node['id']
     if node['action'] == 'dial':
         agi.execute('EXEC DIAL {}'.format(node['user']))
     elif node['action'] == 'playback':
         node_input = agi.get_option(node['file'], '12345')
     elif node['action'] == 'input':
-        if node_input is not None:
-            ivr_details = asterisk_db.get_ivr_id_from_input(node_id, node_input)
-            start_ivr_interation(ivr_details['ivr_id'])
+        if node_input != 0:
+            ivr_id = node['ivr_id']
+            parent_node_id = node['id']
+            start_ivr_interation(ivr_id, parent_node_id, node_input)
         else:
             pass
     elif node['action'] == 'hangup':
@@ -42,14 +42,12 @@ def command_handler(node):
         agi.hangup()
 
 
+def initiate_call_handling(ivr_id):
+    agi.answer()
+    start_ivr_interation(ivr_id)
+    agi.hangup()
+
+
 call_details = asterisk_db.get_call_details(caller_id)
-
-time_now = timestamp.split(' ')[1]
-
-ivr_details = asterisk_db.get_ivr_details(call_details['company_id'], time_now)
-
-agi.answer()
-
-start_ivr_interation(ivr_details['id'])
-
-agi.hangup()
+ivr_details = asterisk_db.get_ivr_details(call_details['company_id'], timestamp.split(' ')[1])
+initiate_call_handling(ivr_details['id'])

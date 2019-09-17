@@ -52,11 +52,10 @@ def get_ivr_details(company_id, time_now):
     return details
 
 
-def get_nodes(ivr_id):
+def get_nodes(ivr_id, parent_node_id, last_input):
     myconn = mysql.connector.connect(host="localhost", user="root", passwd="root", database="my_operator")
     cur = myconn.cursor(buffered=True)
-    sql = ''' select ivrn.*, ns.id as node_setting_id, ns.action, ns.user, ns.file from ivr_nodes as ivrn 
-          left join ivr_node_settings as ns on ivrn.id = ns.ivr_node_id where ivr_id = {} '''.format(ivr_id)
+    sql = ''' select * from ivr_nodes where ivr_id = {} and parent_node_id = {} and last_input = {} '''.format(ivr_id, parent_node_id, last_input)
 
     try:
         cur.execute(sql)
@@ -69,20 +68,3 @@ def get_nodes(ivr_id):
     myconn.close()
     return details
 
-
-def get_ivr_id_from_input(node_id, input):
-    myconn = mysql.connector.connect(host="localhost", user="root", passwd="root", database="my_operator")
-    cur = myconn.cursor(buffered=True)
-    sql = ''' select * from ivr_node_input_maps where ivr_node_id = {} 
-          and input = {} '''.format(node_id, input)
-
-    try:
-        cur.execute(sql)
-        myconn.commit()
-    except Exception as exception:
-        print(exception)
-        myconn.rollback()
-
-    details = format_query_result(cur, 'one')
-    myconn.close()
-    return details
