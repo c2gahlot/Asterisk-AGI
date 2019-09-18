@@ -37,7 +37,6 @@ def get_ivr_details(company_id, time_now):
     sql = ''' select * from ivrs where company_id = {} 
           and ((start_time <= '{}' and end_time > '{}') 
           or (start_time = '00:00:00' and end_time = '00:00:00')) '''.format(company_id, time_now, time_now)
-
     try:
         cur.execute(sql)
         myconn.commit()
@@ -55,7 +54,6 @@ def get_nodes(ivr_id, parent_node_id, last_input):
     cur = myconn.cursor(buffered=True)
     sql = ''' select * from ivr_nodes where ivr_id = {} and parent_node_id = {} and 
           last_input = {} '''.format(ivr_id, parent_node_id, last_input)
-
     try:
         cur.execute(sql)
         myconn.commit()

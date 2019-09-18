@@ -1,6 +1,7 @@
 #!/home/vagrant/code/Asterisk-AGI/.vagenv/bin/python
 
 import sys
+import datetime
 import asterisk_db
 from asterisk.agi import AGI
 
@@ -31,6 +32,7 @@ def command_handler(node):
         for agent in agents:
             agent_list.append('{}/{}'.format(agent['type'], agent['name']))
         agent_string = '&'.join(agent_list)
+        agi.execute('EXEC MIXMONITOR "/home/vagrant/code/Asterisk-AGI/storage/recordings/{} {}.wav"'.format(node['users_tag'], str(datetime.datetime.now())))
         agi.execute('EXEC DIAL {}'.format(agent_string))
     elif node['action'] == 'playback':
         node_input = agi.get_option(node['file'], '12345')
