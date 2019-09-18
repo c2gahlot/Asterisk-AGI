@@ -1,3 +1,4 @@
+import pickle
 import mysql.connector
 
 
@@ -69,7 +70,7 @@ def get_nodes(ivr_id, parent_node_id, last_input):
 def get_users_by_tag(tag_name):
     myconn = mysql.connector.connect(host="localhost", user="root", passwd="root", database="my_operator")
     cur = myconn.cursor(buffered=True)
-    sql = ''' select * from agents where tag = '{}' '''.format(tag_name)
+    sql = ''' select * from peers where tag = '{}' '''.format(tag_name)
 
     try:
         cur.execute(sql)
@@ -82,3 +83,41 @@ def get_users_by_tag(tag_name):
     myconn.close()
     return details
 
+
+def insert_call_details(data):
+    myconn = mysql.connector.connect(host="localhost", user="root", passwd="root", database="my_operator")
+    cur = myconn.cursor()
+
+    keys = ','.join(data.keys())
+    values = '"' + '","'.join(data.values()) + '"'
+
+    sql = ''' insert into call_details ({}) values ({}) '''.format(keys, values)
+
+    try:
+        cur.execute(sql)
+        myconn.commit()
+    except Exception as exception:
+        print(exception)
+        myconn.rollback()
+
+    myconn.close()
+
+
+def insert_session(data):
+    myconn = mysql.connector.connect(host="localhost", user="root", passwd="root", database="my_operator")
+    cur = myconn.cursor()
+
+    data['trace'] = pickle.dumps(data['trace'])
+
+    sql = ''' insert into sessions (unique_id, caller_id, context, extension, call_log, timestamp, trace) 
+            values ("{}", "{}", "{}", "{}", {}, "{}", "{}") '''.format(data['unique_id'],data['caller_id'],
+            data['context'],data['extension'],data['call_log'],data['timestamp'],data['trace'])
+
+    try:
+        cur.execute(sql)
+        myconn.commit()
+    except Exception as exception:
+        print(exception)
+        myconn.rollback()
+
+    myconn.close()

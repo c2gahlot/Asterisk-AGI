@@ -17,6 +17,17 @@ parent_node_id = 0
 node_input = 0
 
 
+session = {
+    'unique_id' : unique_id,
+    'caller_id' : caller_id,
+    'context' : context,
+    'extension' : extension,
+    'timestamp' : timestamp,
+    'call_log' : False,
+    'trace' : []
+}
+
+
 def start_ivr_interation(ivr_id, parent_node_id=0, last_input=0):
     nodes = asterisk_db.get_nodes(ivr_id, parent_node_id, last_input)
     for node in nodes:
@@ -24,7 +35,7 @@ def start_ivr_interation(ivr_id, parent_node_id=0, last_input=0):
 
 
 def command_handler(node):
-    global node_id, node_input
+    global node_id, node_input, session
 
     if node['action'] == 'dial':
         agents = asterisk_db.get_users_by_tag(node['users_tag'])
@@ -32,26 +43,93 @@ def command_handler(node):
         for agent in agents:
             agent_list.append('{}/{}'.format(agent['type'], agent['name']))
         agent_string = '&'.join(agent_list)
-        agi.execute('EXEC MIXMONITOR "/home/vagrant/code/Asterisk-AGI/storage/recordings/{} {}.wav"'.format(node['users_tag'], str(datetime.datetime.now())))
-        agi.execute('EXEC DIAL {}'.format(agent_string))
+
+        session['trace'].append({
+            'action' : node['action'],
+            'agent_string' : agent_string
+        })
+
+        filename = '/home/vagrant/code/Asterisk-AGI/storage/recordings/{} {}.wav'.format(node['users_tag'], str(datetime.datetime.now()))
+        agi.execute('EXEC MIXMONITOR "{}"'.format(filename))
+        agi.execute('EXEC DIAL {},20,g'.format(agent_string))
+
+        call_data = {
+            'unique_id': agi.get_variable('UNIQUEID'),
+            'dnid': caller_id,
+            'channel': agi.get_variable('CHANNEL'),
+            'context': agi.get_variable('CONTEXT'),
+            'peer_name' : agi.get_variable('DIALEDPEERNAME'),
+            'peer_type' : (agi.get_variable('DIALEDPEERNAME')).split('/')[0],
+            'peer_number' : agi.get_variable('DIALEDPEERNUMBER'),
+            'answered_time': agi.get_variable('ANSWEREDTIME'),
+            'calling_pres': agi.get_variable('CALLINGPRES'),
+            'dialed_time' : agi.get_variable('DIALEDTIME'),
+            'dial_status' : agi.get_variable('DIALSTATUS'),
+            'hangup_cause': agi.get_variable('HANGUPCAUSE'),
+            'extension': agi.get_variable('EXTEN'),
+            'language': agi.get_variable('LANGUAGE'),
+            'meet_me_secs': agi.get_variable('MEETMESECS'),
+            'priority': agi.get_variable('PRIORITY'),
+            'rdnis' : agi.get_variable('RDNIS'),
+            'sip_domain' : agi.get_variable('SIPDOMAIN'),
+            'sip_codec' : agi.get_variable('SIP_CODEC'),
+            'sip_call_id' : agi.get_variable('SIPCALLID'),
+            'sip_user_agent' : agi.get_variable('SIPUSERAGENT'),
+            'transfer_capability' : agi.get_variable('TRANSFERCAPABILITY'),
+            'txt_cid_name' : agi.get_variable('TXTCIDNAME'),
+            'recorded_file' : filename,
+            'datetime': timestamp
+        }
+
+        call_data_string = str(call_data)
+        agi.verbose(call_data_string, level=4)
+        asterisk_db.insert_call_details(call_data)
+        agi.verbose("Record Inserted", level=4)
+        session['call_log'] = True
+
     elif node['action'] == 'playback':
+        session['trace'].append({
+            'action' : node['action'],
+            'filename' : node['file']
+        })
         node_input = agi.get_option(node['file'], '12345')
     elif node['action'] == 'input':
         if node_input != 0:
             ivr_id = node['ivr_id']
             parent_node_id = node['id']
+            session['trace'].append({
+                'action': node['action'],
+                'ivr_id': ivr_id,
+                'parent_node_id': parent_node_id
+            })
             start_ivr_interation(ivr_id, parent_node_id, node_input)
         else:
             pass
     elif node['action'] == 'hangup':
+        session['trace'].append({
+            'action': node['action'],
+            'hangup_cause' : 0
+        })
         agi.hangup()
     else:
+        session['trace'].append({
+            'action': node['action'],
+            'hangup_cause': 0
+        })
         agi.hangup()
 
 
 def initiate_call_handling(ivr_id):
+    global session
     agi.answer()
     start_ivr_interation(ivr_id)
+    session['trace'].append({
+        'action': 'hangup',
+        'hangup_cause': 0
+    })
+    session_string = str(session)
+    agi.verbose(session_string, level=4)
+    asterisk_db.insert_session(session)
     agi.hangup()
 
 
