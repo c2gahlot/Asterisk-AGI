@@ -109,8 +109,8 @@ def insert_session(data):
 
     data['trace'] = pickle.dumps(data['trace'])
 
-    sql = ''' insert into sessions (unique_id, caller_id, context, extension, call_log, timestamp, trace) 
-            values ("{}", "{}", "{}", "{}", {}, "{}", "{}") '''.format(data['unique_id'],data['caller_id'],
+    sql = ''' insert into sessions (unique_id, dnid, context, extension, call_log, timestamp, trace) 
+            values ("{}", "{}", "{}", "{}", {}, "{}", "{}") '''.format(data['unique_id'],data['dnid'],
             data['context'],data['extension'],data['call_log'],data['timestamp'],data['trace'])
 
     try:

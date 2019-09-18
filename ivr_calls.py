@@ -19,7 +19,7 @@ node_input = 0
 
 session = {
     'unique_id' : unique_id,
-    'caller_id' : caller_id,
+    'dnid' : caller_id,
     'context' : context,
     'extension' : extension,
     'timestamp' : timestamp,
@@ -81,10 +81,7 @@ def command_handler(node):
             'datetime': timestamp
         }
 
-        call_data_string = str(call_data)
-        agi.verbose(call_data_string, level=4)
         asterisk_db.insert_call_details(call_data)
-        agi.verbose("Record Inserted", level=4)
         session['call_log'] = True
 
     elif node['action'] == 'playback':
@@ -105,12 +102,6 @@ def command_handler(node):
             start_ivr_interation(ivr_id, parent_node_id, node_input)
         else:
             pass
-    elif node['action'] == 'hangup':
-        session['trace'].append({
-            'action': node['action'],
-            'hangup_cause' : 0
-        })
-        agi.hangup()
     else:
         session['trace'].append({
             'action': node['action'],
@@ -127,8 +118,6 @@ def initiate_call_handling(ivr_id):
         'action': 'hangup',
         'hangup_cause': 0
     })
-    session_string = str(session)
-    agi.verbose(session_string, level=4)
     asterisk_db.insert_session(session)
     agi.hangup()
 
