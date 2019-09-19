@@ -1,4 +1,4 @@
-import pickle
+import json
 import mysql.connector
 
 def format_timedelta_to_string(delta):
@@ -127,10 +127,11 @@ def insert_session(data):
     myconn = mysql.connector.connect(host="localhost", user="root", passwd="root", database="my_operator")
     cur = myconn.cursor()
 
-    data['trace'] = pickle.dumps(data['trace'])
+    data['trace'] = json.dumps(data['trace'])
+    print(data['trace'])
 
     sql = ''' insert into sessions (unique_id, dnid, context, extension, call_log, timestamp, trace) 
-            values ("{}", "{}", "{}", "{}", {}, "{}", "{}") '''.format(data['unique_id'],data['dnid'],
+            values ('{}', '{}', '{}', '{}', {}, '{}', '{}') '''.format(data['unique_id'],data['dnid'],
             data['context'],data['extension'],data['call_log'],data['timestamp'],data['trace'])
 
     try:

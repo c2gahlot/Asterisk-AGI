@@ -1,3 +1,4 @@
+import random
 import unittest
 import datetime
 import asterisk_db
@@ -60,7 +61,7 @@ class AsteriskDBTest(unittest.TestCase):
 
     def test_insert_call_details(self):
         cases = [{
-            'unique_id': '1568868322.15',
+            'unique_id': random.randrange(1000000000, 9999999999),
             'dnid': '100',
             'channel': 'SIP/agi-user-00000009',
             'context': 'incoming',
@@ -91,7 +92,7 @@ class AsteriskDBTest(unittest.TestCase):
 
     def test_insert_session(self):
         cases = [{
-            'unique_id': '1568868322.15',
+            'unique_id': random.randrange(1000000000, 9999999999),
             'dnid': '100',
             'context': 'incoming',
             'extension': '100',

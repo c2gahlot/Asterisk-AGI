@@ -105,7 +105,7 @@ def command_handler(node):
     else:
         session['trace'].append({
             'action': node['action'],
-            'hangup_cause': 0
+            'hangup_cause': 16
         })
         agi.hangup()
 
@@ -116,7 +116,7 @@ def initiate_call_handling(ivr_id):
     start_ivr_interation(ivr_id)
     session['trace'].append({
         'action': 'hangup',
-        'hangup_cause': 0
+        'hangup_cause': 16
     })
     asterisk_db.insert_session(session)
     agi.hangup()
