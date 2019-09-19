@@ -35,7 +35,7 @@ def start_ivr_interation(ivr_id, parent_node_id=0, last_input=0):
 
 
 def command_handler(node):
-    global node_id, node_input, session
+    global node_input, session
 
     if node['action'] == 'dial':
         agents = asterisk_db.get_users_by_tag(node['users_tag'])
