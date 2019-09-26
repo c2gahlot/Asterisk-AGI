@@ -128,7 +128,6 @@ def insert_session(data):
     cur = myconn.cursor()
 
     data['trace'] = json.dumps(data['trace'])
-    print(data['trace'])
 
     sql = ''' insert into sessions (unique_id, dnid, context, extension, call_log, timestamp, trace) 
             values ('{}', '{}', '{}', '{}', {}, '{}', '{}') '''.format(data['unique_id'],data['dnid'],

@@ -16,15 +16,14 @@ timestamp = sys.argv[5]
 parent_node_id = 0
 node_input = 0
 
-
 session = {
-    'unique_id' : unique_id,
-    'dnid' : caller_id,
-    'context' : context,
-    'extension' : extension,
-    'timestamp' : timestamp,
-    'call_log' : False,
-    'trace' : []
+    'unique_id': unique_id,
+    'dnid': caller_id,
+    'context': context,
+    'extension': extension,
+    'timestamp': timestamp,
+    'call_log': False,
+    'trace': []
 }
 
 
@@ -45,11 +44,12 @@ def command_handler(node):
         agent_string = '&'.join(agent_list)
 
         session['trace'].append({
-            'action' : node['action'],
-            'agent_string' : agent_string
+            'action': node['action'],
+            'agent_string': agent_string
         })
 
-        filename = '/home/vagrant/code/Asterisk-AGI/storage/recordings/{} {}.wav'.format(node['users_tag'], str(datetime.datetime.now()))
+        filename = '/home/vagrant/code/Asterisk-AGI/storage/recordings/{} {}.wav'.format(node['users_tag'],
+                                                                                         str(datetime.datetime.now()))
         agi.execute('EXEC MIXMONITOR "{}"'.format(filename))
         agi.execute('EXEC DIAL {},20,g'.format(agent_string))
 
@@ -58,26 +58,26 @@ def command_handler(node):
             'dnid': caller_id,
             'channel': agi.get_variable('CHANNEL'),
             'context': agi.get_variable('CONTEXT'),
-            'peer_name' : agi.get_variable('DIALEDPEERNAME'),
-            'peer_type' : (agi.get_variable('DIALEDPEERNAME')).split('/')[0],
-            'peer_number' : agi.get_variable('DIALEDPEERNUMBER'),
+            'peer_name': agi.get_variable('DIALEDPEERNAME'),
+            'peer_type': (agi.get_variable('DIALEDPEERNAME')).split('/')[0],
+            'peer_number': agi.get_variable('DIALEDPEERNUMBER'),
             'answered_time': agi.get_variable('ANSWEREDTIME'),
             'calling_pres': agi.get_variable('CALLINGPRES'),
-            'dialed_time' : agi.get_variable('DIALEDTIME'),
-            'dial_status' : agi.get_variable('DIALSTATUS'),
+            'dialed_time': agi.get_variable('DIALEDTIME'),
+            'dial_status': agi.get_variable('DIALSTATUS'),
             'hangup_cause': agi.get_variable('HANGUPCAUSE'),
             'extension': agi.get_variable('EXTEN'),
             'language': agi.get_variable('LANGUAGE'),
             'meet_me_secs': agi.get_variable('MEETMESECS'),
             'priority': agi.get_variable('PRIORITY'),
-            'rdnis' : agi.get_variable('RDNIS'),
-            'sip_domain' : agi.get_variable('SIPDOMAIN'),
-            'sip_codec' : agi.get_variable('SIP_CODEC'),
-            'sip_call_id' : agi.get_variable('SIPCALLID'),
-            'sip_user_agent' : agi.get_variable('SIPUSERAGENT'),
-            'transfer_capability' : agi.get_variable('TRANSFERCAPABILITY'),
-            'txt_cid_name' : agi.get_variable('TXTCIDNAME'),
-            'recorded_file' : filename,
+            'rdnis': agi.get_variable('RDNIS'),
+            'sip_domain': agi.get_variable('SIPDOMAIN'),
+            'sip_codec': agi.get_variable('SIP_CODEC'),
+            'sip_call_id': agi.get_variable('SIPCALLID'),
+            'sip_user_agent': agi.get_variable('SIPUSERAGENT'),
+            'transfer_capability': agi.get_variable('TRANSFERCAPABILITY'),
+            'txt_cid_name': agi.get_variable('TXTCIDNAME'),
+            'recorded_file': filename,
             'datetime': timestamp
         }
 
@@ -86,8 +86,8 @@ def command_handler(node):
 
     elif node['action'] == 'playback':
         session['trace'].append({
-            'action' : node['action'],
-            'filename' : node['file']
+            'action': node['action'],
+            'filename': node['file']
         })
         node_input = agi.get_option(node['file'], '12345')
     elif node['action'] == 'input':
