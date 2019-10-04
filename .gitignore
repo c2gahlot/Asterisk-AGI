@@ -1,5 +1,8 @@
 .vagenv
 .venv
+.vscode/
 .idea/
+__pycache__/
+backup/
 storage/
 rough.py
