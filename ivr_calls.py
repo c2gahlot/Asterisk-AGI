@@ -48,8 +48,7 @@ def command_handler(node):
             'agent_string': agent_string
         })
 
-        filename = '/home/vagrant/code/Asterisk-AGI/storage/recordings/{} {}.wav'.format(node['users_tag'],
-                                                                                         str(datetime.datetime.now()))
+        filename = '/home/vagrant/code/Asterisk-AGI/storage/recordings/{} {}.wav'.format(node['users_tag'], str(datetime.datetime.now()))
         agi.execute('EXEC MIXMONITOR "{}"'.format(filename))
         agi.execute('EXEC DIAL {},20,g'.format(agent_string))
 
