@@ -1,4 +1,4 @@
-#!/home/vagrant/code/Asterisk-AGI/.vagenv/bin/python
+#!/home/vagrant/codes/Asterisk-AGI/.vagenv/bin/python
 
 import sys
 import datetime
@@ -25,7 +25,6 @@ session = {
     'call_log': False,
     'trace': []
 }
-
 
 def start_ivr_interation(ivr_id, parent_node_id=0, last_input=0):
     nodes = asterisk_db.get_nodes(ivr_id, parent_node_id, last_input)

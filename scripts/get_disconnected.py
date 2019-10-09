@@ -1,4 +1,4 @@
-#!/home/vagrant/code/Asterisk-AGI/.vagenv/bin/python
+#!/home/vagrant/codes/Asterisk-AGI/.vagenv/bin/python
 
 import sys, os
 
