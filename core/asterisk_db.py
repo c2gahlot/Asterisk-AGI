@@ -1,8 +1,9 @@
 import json
 import mysql.connector
 
+
 def format_timedelta_to_string(delta):
-    return  '0' + str(delta) if len(str(delta)) == 7 else str(delta)
+    return '0' + str(delta) if len(str(delta)) == 7 else str(delta)
 
 
 def format_query_result(cursor, type='many'):
@@ -73,8 +74,8 @@ def get_nodes(ivr_id, parent_node_id, last_input):
     myconn = mysql.connector.connect(host="localhost", user="root", passwd="root", database="my_operator")
     cur = myconn.cursor(buffered=True)
     details = []
-    sql = ''' select * from ivr_nodes where ivr_id = {} and parent_node_id = {} and 
-          last_input = {} '''.format(ivr_id, parent_node_id, last_input)
+    sql = ''' select * from ivr_nodes where ivr_id = {} and parent_node_id = {} and last_input = {} '''.format(
+        ivr_id, parent_node_id, last_input)
     try:
         cur.execute(sql)
         myconn.commit()
@@ -130,8 +131,9 @@ def insert_session(data):
     data['trace'] = json.dumps(data['trace'])
 
     sql = ''' insert into sessions (unique_id, dnid, context, extension, call_log, timestamp, trace) 
-            values ('{}', '{}', '{}', '{}', {}, '{}', '{}') '''.format(data['unique_id'],data['dnid'],
-            data['context'],data['extension'],data['call_log'],data['timestamp'],data['trace'])
+            values ('{}', '{}', '{}', '{}', {}, '{}', '{}') '''.format(data['unique_id'], data['dnid'], data['context'],
+                                                                       data['extension'], data['call_log'],
+                                                                       data['timestamp'], data['trace'])
 
     try:
         cur.execute(sql)

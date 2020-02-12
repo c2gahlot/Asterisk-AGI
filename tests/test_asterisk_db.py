@@ -1,7 +1,7 @@
 import random
 import unittest
 import datetime
-import asterisk_db
+from core import asterisk_db
 
 
 class AsteriskDBTest(unittest.TestCase):

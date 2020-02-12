@@ -2,7 +2,7 @@
 
 import sys
 import datetime
-import asterisk_db
+from core import asterisk_db
 from asterisk.agi import AGI
 
 agi = AGI()
